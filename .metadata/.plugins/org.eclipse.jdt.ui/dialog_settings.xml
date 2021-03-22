@@ -30,9 +30,12 @@
 		<item key="FatJarPackageWizardPage.ANTSCRIPT_SAVE" value="false"/>
 		<item key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION" value="C:\Users\82108\eclipse-workspace"/>
 		<item key="FatJarPackageWizardPage.LIBRARY_HANDLING" value="1"/>
-		<item key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME" value="Ex2_3b - Ex2_3b"/>
-		<item key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION" value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex2_3b.jar"/>
+		<item key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME" value="Ex3_1c - Ex3_1c"/>
+		<item key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION" value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1c.jar"/>
 		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1c.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1b.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1a.jar"/>
 			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex2_3b.jar"/>
 			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex2_3a.jar"/>
 			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex2_2.jar"/>
