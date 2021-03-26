@@ -3,6 +3,7 @@
 	<item key="org.eclipse.jdt.ui.last.selected.jre.kind2" value="2"/>
 	<item key="org.eclipse.jdt.ui.last.selected.execution.enviroment" value="JavaSE-15"/>
 	<item key="org.eclipse.jdt.ui.last.external.project" value="C:\Users\82108\OneDrive\문서"/>
+	<item key="org.eclipse.jdt.ui.lastextjar" value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일"/>
 	<section name="completion_proposal_size">
 	</section>
 	<section name="quick_assist_proposal_size">
@@ -30,12 +31,12 @@
 		<item key="FatJarPackageWizardPage.ANTSCRIPT_SAVE" value="false"/>
 		<item key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION" value="C:\Users\82108\eclipse-workspace"/>
 		<item key="FatJarPackageWizardPage.LIBRARY_HANDLING" value="1"/>
-		<item key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME" value="Ex3_1c - Ex3_1c"/>
-		<item key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION" value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1c.jar"/>
+		<item key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME" value="Ex3_2a - Ex3_2a"/>
+		<item key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION" value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1a.jar"/>
 		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1a.jar"/>
 			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1c.jar"/>
 			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1b.jar"/>
-			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1a.jar"/>
 			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex2_3b.jar"/>
 			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex2_3a.jar"/>
 			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex2_2.jar"/>
@@ -52,5 +53,39 @@
 			<item value="C:\Users\82108\eclipse-workspace.xml"/>
 			<item value=".xml"/>
 		</list>
+	</section>
+	<section name="JarPackageWizard">
+		<item key="JarPackageWizardPage.EXPORT_CLASS_FILES" value="true"/>
+		<item key="JarPackageWizardPage.EXPORT_OUTPUT_FOLDER" value="false"/>
+		<item key="JarPackageWizardPage.EXPORT_JAVA_FILES" value="true"/>
+		<item key="JarPackageWizardPage.REFACTORINGS" value="false"/>
+		<item key="JarPackageWizardPage.COMPRESS" value="true"/>
+		<item key="JarPackageWizardPage.INCLUDE_DIRECTORY_ENTRIES" value="false"/>
+		<item key="JarPackageWizardPage.OVERWRITE" value="false"/>
+		<item key="jarOptionsWizardPage.EXPORT_WARNINGS" value="true"/>
+		<item key="jarOptionsWizardPage.EXPORT_ERRORS" value="true"/>
+		<item key="jarOptionsWizardPage.STORE_USE_SRC_FOLDERS" value="false"/>
+		<item key="jarOptionsWizardPage.BUILD_IF_NEEDED" value="true"/>
+		<item key="jarOptionsWizardPage.SAVE_DESCRIPTION" value="false"/>
+		<item key="jarOptionsWizardPage.DESCRIPTION_LOCATION" value=""/>
+		<item key="JarManifestWizardPage.GENERATE_MANIFEST" value="true"/>
+		<item key="JarManifestWizardPage.SAVE_MANIFEST" value="false"/>
+		<item key="JarManifestWizardPage.REUSE_MANIFEST" value="false"/>
+		<item key="JarManifestWizardPage.MANIFEST_LOCATION" value=""/>
+		<item key="JarManifestWizardPage.SEAL_JAR" value="false"/>
+		<list key="JarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1c.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1b.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_1a.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_2b.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_2a.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_13.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_10.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_9.jar"/>
+			<item value="C:\Users\82108\OneDrive\바탕 화면\jar제출파일\Ex3_14.jar"/>
+		</list>
+	</section>
+	<section name="BuildPathsPropertyPage">
+		<item key="pageIndex" value="2"/>
 	</section>
 </section>
