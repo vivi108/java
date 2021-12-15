@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE bulletin SYSTEM "BulletinBoard.dtd">
+
+
+<bulletin>
+	<name>BulletinBoardHere</name>
+	<article>
+		<title>The title1</title>
+		<message>message1</message>
+		<writerID>writerID1</writerID>
+		<writername>writername1</writername>
+		<reply>
+			<Rmessage>replymessage1</Rmessage>
+			<RwriterID>replywriterID1</RwriterID>
+			<Rwritername>replyywritername1</Rwritername>
+		</reply>
+	</article>
+	<article>
+		<title>The title2</title>
+		<message>message2</message>
+		<writerID>writerID2</writerID>
+		<writername>writername2</writername>
+		<reply>
+			<Rmessage>replymessage2</Rmessage>
+			<RwriterID>replywriterID2</RwriterID>
+			<Rwritername>eplyywritername2</Rwritername>
+		</reply>
+		<reply>
+			<Rmessage>replymessage3</Rmessage>
+			<RwriterID>replywriterID3</RwriterID>
+			<Rwritername>eplyywritername3</Rwritername>
+		</reply>
+	</article>
+</bulletin>

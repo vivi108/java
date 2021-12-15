@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT bulletin (name, article+)>
+	<!ELEMENT name (#PCDATA)>
+	<!ELEMENT article (title, message, writerID, writername, reply*)>
+		<!ELEMENT title (#PCDATA)>
+		<!ELEMENT message (#PCDATA)>
+		<!ELEMENT writerID (#PCDATA)>
+		<!ELEMENT writername (#PCDATA)>
+		<!ELEMENT reply (Rmessage, RwriterID, Rwritername)>
+			<!ELEMENT Rmessage (#PCDATA) >
+			<!ELEMENT RwriterID (#PCDATA)>
+			<!ELEMENT Rwritername (#PCDATA)>
+	

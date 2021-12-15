@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TVSCHEDULE  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="tvschedule.xsd" NAME="att1">
+	<CHANNEL CHAN="chan">
+		<BANNER>banner1</BANNER>
+		<DAY>
+			<DATE>2001-02-01</DATE>
+			<PROGRAMSLOT>
+				<TIME>16:00:00</TIME>
+				<TITLE RATING="1">title1</TITLE>
+				<DESCRIPTION>description</DESCRIPTION>
+			</PROGRAMSLOT>
+		</DAY>
+	</CHANNEL>
+
+</TVSCHEDULE>
