@@ -3,31 +3,24 @@ package RockPaperScissors;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 import RockPaperScissors.HandGameServer;
 import RockPaperScissors.ServerThread;
 
 
 public class ServerThread extends Thread {
-		
-		
 	  private Socket st_sock;
 	   private DataInputStream st_in;
 	   private DataOutputStream st_out;
 	   private StringBuffer st_buffer;
-	   
+
 	   /* 로그온된 사용자 저장 */
 	   private static Hashtable<String,ServerThread> logonHash; 
 	   private static Vector<String> logonVector;
+	   private static Set<DataOutputStream> ChatHash; // 챗
 	   
 	   /* 게임방 리스트 저장 */
 	   private static Hashtable<String,ServerThread> playerHash; 
@@ -55,6 +48,7 @@ public class ServerThread extends Thread {
 	   private static final int REQ_QUITROOM = 1041;
 	   private static final int REQ_SENDMESSAGE = 1045;
 	   private static final int REQ_PLAYGAME = 1055;
+	   private static final int REQ_CHAT = 1056; //챗
  
 	   
 	   // 클라이언트에 전송하는 메시지 코드
@@ -69,9 +63,8 @@ public class ServerThread extends Thread {
 	   private static final int MDY_MEMVER = 2004;
 	   private static final int NO_PLAYGAME = 2014;
 	   private static final int YES_PLAYGAME = 2018;
-	   //이겼음과 졌음을 알리기
-	   private static final int WIN=1111;
-	   private static final int LOSE=1110;
+	   private static final int SEND_MSG = 2021; // 챗
+	   
 	   
 	   // 에러 메시지 코드
 	   private static final int MSG_ALREADYUSER = 3001;
@@ -80,12 +73,19 @@ public class ServerThread extends Thread {
 	   private static final int ERR_NOUSER = 2015;
 	   private static final int ERR_REJECITON = 2019;
 	   private static final int ERR_ALREADYPLAYER = 2033;
+
+	   //승패 업뎃
+	   //이겼음과 졌음을 전달받기
+	   private static final int WIN=1111;
+		private static final int LOSE=1110;
 	   
 	   static{	
 		      logonHash = new Hashtable<String,ServerThread>(HandGameServer.maxclient);
 		      logonVector = new Vector<String>(HandGameServer.maxclient); 
 		      playerHash = new Hashtable<String,ServerThread>(HandGameServer.maxclient);
-		      playerVector = new Vector<String>(HandGameServer.maxclient); 
+		      playerVector = new Vector<String>(HandGameServer.maxclient);
+
+			  ChatHash = new HashSet<>();
 		   }
 	
 	public ServerThread(Socket sock){
@@ -100,22 +100,35 @@ public class ServerThread extends Thread {
 	         System.out.println(e);
 	      }
 	   }
-	
+
+	   ///
+	connectingDB update = new connectingDB();
+	   ///
 	   //연결된 여러개의 클라이언트 쓰레드
 	   public void run(){
-		   String user1="", user2="";
 		   try{
 		         while(true){
-		        	
 		            String recvData = st_in.readUTF();
 		            StringTokenizer st = new StringTokenizer(recvData, SEPARATOR);
 		            int command = Integer.parseInt(st.nextToken());
 		            switch(command){
 
+						//챗
+						case REQ_CHAT:{
+							String msg = st_ID +" : " + st.nextToken(); //메세지 내용을 받고
+
+							for (DataOutputStream writer : ChatHash) {
+								writer.writeUTF(SEND_MSG + SEPARATOR + msg);
+								writer.flush();
+							}
+							break;
+						}
+
+		               // 로그온 시도 메시지 PACKET : REQ_LOGON|ID
 		               case REQ_LOGON:{
 		                  int result;
 		                  String id = st.nextToken(); // 클라이언트의 ID를 얻는다.
-		                  result = addUser(id, this);
+		                  result = addUser(id, this, st_out);
 		                  st_buffer.setLength(0);
 		                  if(result ==0){  // 접속을 허용한 상태	                	 
 		                     st_buffer.append(YES_LOGON);                      					
@@ -152,7 +165,7 @@ public class ServerThread extends Thread {
 		               }
 		               case REQ_LOGOUT:{
 		            	   st_buffer.setLength(0);
-		                   String id = st.nextToken(); // 로그인 참여자의 ID를 얻는다.
+		                   String id = st.nextToken(); // 그로인 참여자의 ID를 얻는다.
 		            	   
 		                   logonVector.removeElement(id);  // 사용자 ID 제거
 		                   logonHash.remove(id, this); //사용자 ID 및 클라이언트와 통신할  스레드 제거
@@ -216,7 +229,6 @@ public class ServerThread extends Thread {
 		            	   String id = st.nextToken();
 		            	   String idTo = st.nextToken();
 		            	   
-		            	   
 		            	   playerVector.addElement(id);  //참여자들 벡터와 해쉬테이블에 추가
 		                   playerHash.put(id, this); 
 		                   playerVector.addElement(idTo);  
@@ -247,7 +259,6 @@ public class ServerThread extends Thread {
 		            	   String id = st.nextToken();
 		            	   ServerThread client = null;
 		            	   client = (ServerThread) logonHash.get(id);
-		            	  
 		            	   st_buffer.setLength(0);
 		        		   st_buffer.append(NO_PLAYGAME);
 		        		   st_buffer.append(SEPARATOR);
@@ -262,24 +273,17 @@ public class ServerThread extends Thread {
 		               
 		               //게임 결과 계산하기
 		               case REQ_GETRESULT:{
-		            	   connectingDB user= new connectingDB();
+		            	   
 		            	   String id = st.nextToken();
 		            	   st_buffer.setLength(0);
 		                   st_buffer.append(YES_GETRESULT);
 		                   st_buffer.append(SEPARATOR);
 		                   
-		                   
 		                   if(client1 == null) {  //참여자1 hashtable에서 찾기
-		            		  
-		                	   client1 = (ServerThread) logonHash.get(id);
-		                	   
-		                	   
-		                	
+		            		   client1 = (ServerThread) logonHash.get(id);
 		            	   }
 		            	   else{  //참여자2 hashtable에서 찾기
 		            		   client2 = (ServerThread) logonHash.get(id);
-		            		   
-		            		  
 		            	   }
 		            	   
 		            	   if(choose1 == null) {  //참여자1의 버튼결과
@@ -303,44 +307,47 @@ public class ServerThread extends Thread {
 		            				   choose1 = choose2 = null;
 		            				   client1 = client2 = null;
 		            				   break;
-		            			  
+		            			  ////////////////////////////////////////////////////////////////////////////////////
 		            			   }else if(chooseInt2 == 1) {  
 		            				   st_buffer.append("상대방과의 게임에서 졌습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(LOSE);
-		            				   client1.send(st_buffer.toString());
-		            	
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(LOSE);
+
+
+									   client1.send(st_buffer.toString());
 		            				   System.out.println(st_buffer.toString()+"\n");
-		            				   
-		            				   
 		            				   st_buffer.delete( st_buffer.length()-21, st_buffer.length()-1);
+
 		            				   st_buffer.append("상대방과의 게임에서 이겼습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(WIN);
-		            				   client2.send(st_buffer.toString());
-		            				  
-		            				  
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(WIN);
+
+
+									   client2.send(st_buffer.toString());
+		            				   
 		            				   choose1 = choose2 = null;
 		            				   client1 = client2 = null;
-		            				   
-		            				   
 		            				   break;
 		            			   
 		            			   }else if(chooseInt2 == 2) {
 		            				   st_buffer.append("상대방과의 게임에서 이겼습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(WIN);
-		            				   client1.send(st_buffer.toString());
-		            			 
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(WIN);
+
+									   client1.send(st_buffer.toString());
 		            				   st_buffer.delete( st_buffer.length()-22, st_buffer.length()-1);
+
 		            				   st_buffer.append("상대방과의 게임에서 졌습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(LOSE);
-		            				   client2.send(st_buffer.toString());
-		            			
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(LOSE);
+
+									   client2.send(st_buffer.toString());
+		            				   
 		            				   choose1 = choose2 = null;
 		            				   client1 = client2 = null;
-		            			
 		            				   break;
 		            			   
 		            			   }
@@ -349,19 +356,24 @@ public class ServerThread extends Thread {
 		            		   
 		            			   if(chooseInt2 == 0) {
 		            				   st_buffer.append("상대방과의 게임에서 이겼습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(WIN);
-		            				   client1.send(st_buffer.toString());
-		            				   
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(WIN);
+
+
+									   client1.send(st_buffer.toString());
 		            				   st_buffer.delete( st_buffer.length()-22, st_buffer.length()-1);
+
 		            				   st_buffer.append("상대방과의 게임에서 졌습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(LOSE);
-		            				   client2.send(st_buffer.toString());
-		            	   
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(LOSE);
+
+
+									   client2.send(st_buffer.toString());
+		            				   
 		            				   choose1 = choose2 = null;
 		            				   client1 = client2 = null;
-		
 		            				   break;
 		            			  
 		            			   }else if(chooseInt2 == 1) {
@@ -375,19 +387,22 @@ public class ServerThread extends Thread {
 		            			  
 		            			   }else if(chooseInt2 == 2) {
 		            				   st_buffer.append("상대방과의 게임에서 졌습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(LOSE);
-		            				   client1.send(st_buffer.toString());
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(LOSE);
+
+									   client1.send(st_buffer.toString());
 		            				   
 		            				   st_buffer.delete( st_buffer.length()-21, st_buffer.length()-1);
 		            				   st_buffer.append("상대방과의 게임에서 이겼습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(WIN);
-		            				   client2.send(st_buffer.toString());
-		            		
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(WIN);
+
+									   client2.send(st_buffer.toString());
+
 		            				   choose1 = choose2 = null;
 		            				   client1 = client2 = null;
-		    
 		            				   break;
 		            			   
 		            			   }
@@ -395,36 +410,40 @@ public class ServerThread extends Thread {
 		            		   
 		            			   if(chooseInt2 == 0) {
 		            				   st_buffer.append("상대방과의 게임에서 졌습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(LOSE);
-		            				   client1.send(st_buffer.toString());
-		            				   
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(LOSE);
+
+									   client1.send(st_buffer.toString());
 		            				   st_buffer.delete( st_buffer.length()-21, st_buffer.length()-1);
 		            				   st_buffer.append("상대방과의 게임에서 이겼습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(WIN);
-		            				   client2.send(st_buffer.toString());
-		            			
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(WIN);
+
+									   client2.send(st_buffer.toString());
+		            				   
 		            				   choose1 = choose2 = null;
 		            				   client1 = client2 = null;
-		            				  
 		            				   break;
 		            			  
 		            			   }else if(chooseInt2 == 1) {
 		            				   st_buffer.append("상대방과의 게임에서 이겼습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(WIN);
-		            				   client1.send(st_buffer.toString());
-		            				   
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(WIN);
+
+									   client1.send(st_buffer.toString());
 		            				   st_buffer.delete( st_buffer.length()-22, st_buffer.length()-1);
 		            				   st_buffer.append("상대방과의 게임에서 졌습니다.");
-		            				   st_buffer.append(SEPARATOR);
-		            				   st_buffer.append(LOSE);
-		            				   client2.send(st_buffer.toString());
-		            				  
+
+									   st_buffer.append(SEPARATOR);
+									   st_buffer.append(LOSE);
+
+									   client2.send(st_buffer.toString());
+		            				   
 		            				   choose1 = choose2 = null;
 		            				   client1 = client2 = null;
-		            				   
 		            				   break;
 		            			   
 		            			   }else if(chooseInt2 == 2) {
@@ -447,7 +466,7 @@ public class ServerThread extends Thread {
 		               case REQ_QUITROOM:{
 		            	   st_buffer.setLength(0);
 		                   String id = st.nextToken();  
-		                 
+		                  
 		            	   playerVector.removeElement(id); //게임참여자 리스트에서 제거 
 		                   playerHash.remove(id, this); 
 
@@ -477,7 +496,7 @@ public class ServerThread extends Thread {
   }
 	   
 
-	   private static synchronized int addUser(String id, ServerThread client){
+	   private static synchronized int addUser(String id, ServerThread client, DataOutputStream st_out){
 		      if(checkUserID(id) != null){
 		         return MSG_ALREADYUSER;
 		      }  
@@ -486,6 +505,7 @@ public class ServerThread extends Thread {
 		      }
 		      logonVector.addElement(id);  // 사용자 ID 추가
 		      logonHash.put(id, client); // 사용자 ID 및 클라이언트와 통신할 스레드를 저장한다.
+		      ChatHash.add(st_out); // 챗
 		      client.st_ID = id;
 		      return 0; // 클라이언트와 성공적으로 접속하고, 대화방이 이미 개설된 상태.
 		   }

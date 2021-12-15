@@ -28,8 +28,6 @@
     <fullyQualifiedTypeName name="java.text.ParseException"/>
     <fullyQualifiedTypeName name="java.time.LocalTime"/>
     <fullyQualifiedTypeName name="java.net.HttpURLConnection"/>
-    <fullyQualifiedTypeName name="java.io.IOException"/>
-    <fullyQualifiedTypeName name="java.io.File"/>
     <fullyQualifiedTypeName name="java.sql.ResultSet"/>
     <fullyQualifiedTypeName name="java.sql.SQLException"/>
     <fullyQualifiedTypeName name="java.sql.PreparedStatement"/>
@@ -52,4 +50,8 @@
     <fullyQualifiedTypeName name="java.security.NoSuchAlgorithmException"/>
     <fullyQualifiedTypeName name="java.net.InetAddress"/>
     <fullyQualifiedTypeName name="java.net.UnknownHostException"/>
+    <fullyQualifiedTypeName name="java.awt.image.BufferedImage"/>
+    <fullyQualifiedTypeName name="javax.imageio.ImageIO"/>
+    <fullyQualifiedTypeName name="java.io.File"/>
+    <fullyQualifiedTypeName name="java.io.IOException"/>
 </qualifiedTypeNameHistroy>

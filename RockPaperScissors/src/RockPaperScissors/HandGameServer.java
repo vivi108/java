@@ -1,10 +1,5 @@
 package RockPaperScissors;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
 import java.awt.*;
 import java.awt.List;
 import java.awt.event.*;
@@ -15,9 +10,10 @@ import java.util.*;
 import RockPaperScissors.ServerThread;
 
 public class HandGameServer extends Frame implements ActionListener,KeyListener {
-	connectingDB user = new connectingDB();
+	
 	public static final int port = 3000;
 	public static final int maxclient = 7;
+
 	// 클라이언트로부터 접속요청을 기다리고, 소켓을 생성한다.
 	   public static void main(String args[]){
 	      try{
@@ -26,9 +22,10 @@ public class HandGameServer extends Frame implements ActionListener,KeyListener 
 	          while(true){
 	              Socket sock = null;
 	              ServerThread client = null; //클라이언트와 통신할 서버소켓
-	              try{
+
+				  try{
 	                 sock = theSocket.accept(); // 클라이언트의 접속을 기다린다.
-	                 client = new ServerThread(sock); 
+	                 client = new ServerThread(sock);
 	                 client.start();
 	              }catch(IOException e){
 	                 System.out.println(e);
@@ -51,27 +48,27 @@ public class HandGameServer extends Frame implements ActionListener,KeyListener 
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

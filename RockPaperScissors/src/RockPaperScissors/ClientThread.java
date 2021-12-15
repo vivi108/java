@@ -9,8 +9,9 @@ import javax.swing.JOptionPane;
 
 
 public class ClientThread extends Thread{
-		connectingDB user= new connectingDB();
-	
+
+	connectingDB user= new connectingDB();
+
 	   private HandGameClient ct_client; // ChatClient 객체
 	   private Socket ct_sock; // 클라이언트 소켓
 	   private DataInputStream ct_in; // 입력 스트림
@@ -34,6 +35,7 @@ public class ClientThread extends Thread{
 	   private static final int REQ_QUITROOM = 1041;
 	   private static final int REQ_SENDMESSAGE = 1045;
 	   private static final int REQ_PLAYGAME = 1055;
+	   private static final int REQ_CHAT = 1056; //챗
 
 	   // 서버로부터 전송되는 메시지 코드
 	   private static final int YES_LOGON = 2001;
@@ -47,10 +49,8 @@ public class ClientThread extends Thread{
 	   private static final int MDY_MEMVER = 2004;
 	   private static final int NO_PLAYGAME = 2014;
 	   private static final int YES_PLAYGAME = 2018;
+	   private static final int RECIEVE_MSG = 2021; //챗
 
-	   //이겼음과 졌음을 전달받기
-	   private static final int WIN=1111;
-	   private static final int LOSE=1110;
 	   
 	   // 에러 메시지 코드
 	   private static final int MSG_ALREADYUSER = 3001;
@@ -59,6 +59,11 @@ public class ClientThread extends Thread{
 	   private static final int ERR_NOUSER = 2015;
 	   private static final int ERR_REJECTION = 2019;
 	   private static final int ERR_ALREADYPLAYER = 2033;
+
+	   //승패 업뎃
+	   //이겼음과 졌음을 전달받기
+	   private static final int WIN=1111;
+	private static final int LOSE=1110;
 
 	   private static MessageBox msgBox, logonbox;
 	 
@@ -86,9 +91,14 @@ public class ClientThread extends Thread{
 		            StringTokenizer st = new StringTokenizer(recvData, SEPARATOR);
 		            int command = Integer.parseInt(st.nextToken());
 		            switch(command){
-         
+
+						case RECIEVE_MSG:{
+							ct_client.messageArea.append(st.nextToken() + "\n");
+							break;
+						}
+
 		               case YES_LOGON :{
-		            	   this.ct_client.LogOn_Button.setEnabled(false);
+		            	  // this.ct_client.LogOn_Button.setEnabled(false);
 		                  logonbox.dispose();
 		                  
 		                  //이제부터 상대방을 선택하여 게임을 참여할 수 있다.
@@ -219,38 +229,39 @@ public class ClientThread extends Thread{
 		            		   
 		            	   }
 		               }
-		               //게임 수락시
-		               case YES_PLAYGAME:{
-		            	   //-->게임 요청한 id의 게임방창
-		            	   ct_client.dispose(); // 로그온 창을 지운다.
-		            	   String idTo = st.nextToken(); 
-		                   playroom = new PlayGame(this, "게임방",st_ID,idTo);
-		                   playroom.pack();
-		                   playroom.show(); // 대화방 창을 출력한다.
-		            	   break;
-		               }
+					   //게임 수락시
+						case YES_PLAYGAME:{
+							//-->게임 요청한 id의 게임방창
+							ct_client.dispose(); // 로그온 창을 지운다.
+							String idTo = st.nextToken();
+							playroom = new PlayGame(this, "게임방",st_ID,idTo);
+							playroom.pack();
+							playroom.show(); // 대화방 창을 출력한다.
+							break;
+						}
+
+						case YES_GETRESULT:{
+
+							String result = st.nextToken(); // 대화말 전송자의 ID를 구한다.
+							int code = Integer.parseInt(st.nextToken());
+
+							if(code==WIN) {
+								user.inputwin(st_ID);
+
+							}
+							else if(code==LOSE){
+								user.inputlose(st_ID);
+							}
+							System.out.println(st_ID);
+							try{
+								playroom.lb_status.setText(result);
+							}catch(NoSuchElementException e){}
+
+							break;
+
+						}
 		               
-		               //해당 클라이언트의 게임 결과
-		               case YES_GETRESULT:{
-		            	   
-		            	   String result = st.nextToken(); // 대화말 전송자의 ID를 구한다. 
-		            	   int code = Integer.parseInt(st.nextToken());
-		            	   if(code==WIN) {
-		            		   user.inputwin(st_ID);
-            				   
-		            	   }
-		            	   else if(code==LOSE){
-		            		   user.inputlose(st_ID);
-		            	   }
-		            	   System.out.println(st_ID);
-		                   try{   
-		                      playroom.lb_status.setText(result);
-		                   }catch(NoSuchElementException e){}
-		                  
-		                   break;
-		            	   
-		               }
-		             
+
 		               //게임방을 나갈시
 		               case YES_QUITROOM:{
 		            	   playroom.dispose();
@@ -277,7 +288,20 @@ public class ClientThread extends Thread{
 	   }
 		   
 	   public void release(){ };
-	   
+
+		//챗
+		public void chat(String msg) {
+			try {
+				ct_buffer.setLength(0);
+				ct_buffer.append(REQ_CHAT);
+				ct_buffer.append(SEPARATOR);
+				ct_buffer.append(msg);
+				send(ct_buffer.toString());
+			}catch(IOException e){
+				System.out.println(e);
+			}
+		}
+
 	   public void requestLogon(String id) {
 		      try{
 		    	 st_ID = id;
@@ -288,8 +312,8 @@ public class ClientThread extends Thread{
 		         ct_buffer.append(REQ_LOGON);
 		         ct_buffer.append(SEPARATOR);
 		         ct_buffer.append(id);
-		         send(ct_buffer.toString());  
-		         
+		         send(ct_buffer.toString());
+
 		      }catch(IOException e){
 		         System.out.println(e);
 		      }
@@ -310,7 +334,7 @@ public class ClientThread extends Thread{
 		         System.out.println(e);
 		      }
 		   }
-	   
+
 	//상대방을 선택한 후 게임을 요청한다.
 	 public void requestPlayGame(String idTo) {
 		 withID = idTo;
